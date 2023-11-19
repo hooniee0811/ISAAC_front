@@ -11,7 +11,10 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {AddScheduleStackParamList} from '../navigators/AddScheduleStackNavigator';
+import {
+  AddScheduleStackParamList,
+  AiTask,
+} from '../navigators/AddScheduleStackNavigator';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {
   CompositeScreenProps,
@@ -25,6 +28,7 @@ import {format} from 'date-fns';
 import ProjectDatePicker from '../components/ProjectDatePicker';
 import CreateButton from '../components/CreateButton';
 import axios from 'axios';
+import WaitTaskModal from '../components/WaitTaskModal';
 
 type Props = CompositeScreenProps<
   StackScreenProps<AddScheduleStackParamList, 'AddProject'>,
@@ -40,7 +44,6 @@ export type ProjectProp = {
   start: string;
   end: string;
   details: string;
-  tag: string | number[];
 };
 
 const AddProjectScreen = () => {
@@ -95,22 +98,34 @@ const AddProjectScreen = () => {
 
   const today = new Date();
 
+  // const [project, setProject] = useState<ProjectProp>({
+  //   id: uuid.v4(),
+  //   user_id: userId,
+  //   name: '',
+  //   goal: '',
+  //   expectedOutcome: '',
+  //   start: format(today, 'yyyy-MM-dd'),
+  //   end: format(today, 'yyyy-MM-dd'),
+  //   details: '',
+  // });
   const [project, setProject] = useState<ProjectProp>({
     id: uuid.v4(),
     user_id: userId,
-    name: '',
-    goal: '',
-    expectedOutcome: '',
-    start: JSON.stringify(today),
-    end: JSON.stringify(today),
-    details: '',
-    tag: 'da54cea4-bf89-42dc-b54d-be2d10bbe525',
+    name: '캘린더 앱 개발',
+    goal: '창업 대회 제출 용 앱 프로토타입 개발',
+    expectedOutcome:
+      '로그인 기능과 일정 생성 기능, 그리고 monthly, weekly, daily calendar에 일정을 표시해주는 기능이 포함된 앱',
+    start: '2023-11-22',
+    end: '2023-12-20',
+    details:
+      '하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.',
   });
-  const [start, setStart] = useState<Date>(today);
-  const [end, setEnd] = useState<Date>(today);
+  const [start, setStart] = useState<Date>(new Date('2023-11-22'));
+  const [end, setEnd] = useState<Date>(new Date('2023-12-20'));
   const [openStartDatePicker, setOpenStartDatePicker] =
     useState<boolean>(false);
   const [openEndDatePicker, setOpenEndDatePicker] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   const onChangeProjectName = (
     evt: NativeSyntheticEvent<TextInputChangeEventData>,
@@ -154,8 +169,8 @@ const AddProjectScreen = () => {
       goal: '창업 대회 제출 용 앱 프로토타입 개발',
       expectedOutcome:
         '로그인 기능과 일정 생성 기능, 그리고 monthly, weekly, daily calendar에 일정을 표시해주는 기능이 포함된 앱',
-      start: JSON.stringify(new Date('2023-11-22')),
-      end: JSON.stringify(new Date('2023-12-20')),
+      start: '2023-11-22',
+      end: '2023-12-20',
       details:
         '하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.',
       tag: 'da54cea4-bf89-42dc-b54d-be2d10bbe525',
@@ -172,16 +187,18 @@ const AddProjectScreen = () => {
     //   Alert.alert('프로젝트 종료 시간이 시작 시간보다 빠릅니다!');
     // } else {
     const cp = {...project};
-    cp.start = JSON.stringify(start);
-    cp.end = JSON.stringify(end);
+    cp.start = format(start, 'yyyy-MM-dd');
+    cp.end = format(end, 'yyyy-MM-dd');
     setProject(cp);
-    console.log(project);
+    console.log(prj);
+    console.log(new Date(cp.start));
+    //나중에 prj -> project로 바꾸기
     navigation.navigate('AddTask', {userId: userId, project: prj, tasks: task});
     // }
   };
 
   const chatGPT = async (messages, parameters = {}) => {
-    const apikey = 'API_KEY';
+    const apikey = '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';
     if (messages[0].constructor === String)
       return await chatGPT([['user', messages[0]]]);
     messages = messages.map(line => ({role: line[0], content: line[1].trim()}));
@@ -200,45 +217,81 @@ const AddProjectScreen = () => {
   };
 
   async function generateTasksWithAI() {
-    var inputText = `project name: ${project.name}, project goal: ${project.goal}, expected outcome: ${project.expectedOutcome}, project starts at: 2023.11.22, project ends at: 2023.12.20, project details: 하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.`;
-    inputText = `DESC::${inputText}`;
-    let response;
-    try {
-      response = await chatGPT(
-        [
+    if (project.name === '') {
+      Alert.alert('프로젝트 제목을 입력해주세요');
+    } else if (project.goal === '') {
+      Alert.alert('프로젝트 제목을 입력해주세요');
+    } else if (project.expectedOutcome === '') {
+      Alert.alert('프로젝트 예상 결과를 입력해주세요');
+    } else if (project.details === '') {
+      Alert.alert('프로젝트 세부 사항을 입력해주세요');
+    } else if (end < start) {
+      Alert.alert('프로젝트 종료 시간이 시작 시간보다 빠릅니다!');
+    } else {
+      const cp = {...project};
+      cp.start = format(start, 'yyyy-MM-dd');
+      cp.end = format(end, 'yyyy-MM-dd');
+      setProject(cp);
+      setModalVisible(true);
+
+      var inputText = `project name: ${project.name}, project goal: ${project.goal}, expected outcome: ${project.expectedOutcome}, project starts at: 2023.11.22, project ends at: 2023.12.20, project details: 하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.`;
+      inputText = `DESC::${inputText}`;
+      let response;
+      try {
+        console.log('-----');
+        response = await chatGPT(
           [
-            'system',
-            `The assistant's job is to generate and schedule specific tasks of a project. Name, goal, expected outcome, start date, end date, and details of project will be provided as an input. Response JSONArray like [{order: number, name: string, duration: number, description: string},{order: number, name: string, duration: number, description: string},...]. name and description is to be in korean, and description must include the specific process and information about the task. duration means how long the task takes, and its unit is to be hours. Return only JSON Array. Remove pre-text and post-text.`,
+            [
+              'system',
+              `The assistant's job is to generate and schedule specific tasks of a project. Name, goal, expected outcome, start date, end date, and details of project will be provided as an input. Response JSONArray like [{order: number, name: string, duration: number, description: string},{order: number, name: string, duration: number, description: string},...]. name and description is to be in korean, and description must include the specific process and information about the task. duration means how long the task takes, and its unit is to be hours. Return only JSON Array. Remove pre-text and post-text.`,
+            ],
+            // [
+            //   'user',
+            //   'DESC::project name: 학과 홍보 영상 제작, project goal: 학과 설명회에서 시연할 홍보 영상 제작, expected outcome: 학과 소개와 학과 행사 소개 위주의 4~5분 분량의 더빙 및 자막 작업된 영상, project starts at: 2023.11.14, project ends at: 2023.11.20, project details: 학부 행사 영상은 기존에 학과사무실에서 촬영된 영상을 활용. 더빙은 편집이 일부 완성되면 목요일~금요일 중으로 다른 인원이 진행하기로 함. 영상효과는 많이 사용하지 않고 기존 영상 활용 위주로 편집 진행.',
+            // ],
+            // [
+            //   'assistant',
+            //   '[{order: 1, name: "...", duration: 3, description: "..."}, {order: 2, name: "...", duration: 3.5, description: "..."}, {order: 3, name: "...", duration: 5, description: "..."}, ...]',
+            // ],
+            // [
+            //   'user',
+            //   'DESC::project name: 캘린더 앱 개발, project goal: 창업 대회 제출 용 앱 프로토타입 개발, expected outcome: 로그인 기능과 일정 생성 기능, 그리고 monthly, weekly, daily calendar에 일정을 표시해주는 기능이 포함된 앱, project starts at: 2023.11.22, project ends at: 2023.12.20, project details: 하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.',
+            // ],
+            // [
+            //   'assistant',
+            //   '[{order: 1, name: "...", duration: 2, description: "..."}, {order: 2, name: "...", duration: 7, description: "..."}, {order: 3, name: "...", duration: 4.5, description: "..."}, ...]',
+            // ],
+            // ['user', 'DESC::project name: 캘린더 앱 개발, project goal: 창업 대회 제출 용 앱 프로토타입 개발, expected outcome: 로그인 기능과 일정 생성 기능, 그리고 monthly, weekly, daily calendar에 일정을 표시해주는 기능이 포함된 앱, project starts at: 2023.11.22, project ends at: 2023.12.20, project details: 하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.'],
+            // [
+            //   'assistant',
+            //   '{reasonForRecommendation:"....",colorlist:["#000000","#000000","#000000","#000000","#000000"]}',
+            // ],
+            ['user', inputText],
           ],
-          // [
-          //   'user',
-          //   'DESC::project name: 학과 홍보 영상 제작, project goal: 학과 설명회에서 시연할 홍보 영상 제작, expected outcome: 학과 소개와 학과 행사 소개 위주의 4~5분 분량의 더빙 및 자막 작업된 영상, project starts at: 2023.11.14, project ends at: 2023.11.20, project details: 학부 행사 영상은 기존에 학과사무실에서 촬영된 영상을 활용. 더빙은 편집이 일부 완성되면 목요일~금요일 중으로 다른 인원이 진행하기로 함. 영상효과는 많이 사용하지 않고 기존 영상 활용 위주로 편집 진행.',
-          // ],
-          // [
-          //   'assistant',
-          //   '[{order: 1, name: "...", duration: 3, description: "..."}, {order: 2, name: "...", duration: 3.5, description: "..."}, {order: 3, name: "...", duration: 5, description: "..."}, ...]',
-          // ],
-          // [
-          //   'user',
-          //   'DESC::project name: 캘린더 앱 개발, project goal: 창업 대회 제출 용 앱 프로토타입 개발, expected outcome: 로그인 기능과 일정 생성 기능, 그리고 monthly, weekly, daily calendar에 일정을 표시해주는 기능이 포함된 앱, project starts at: 2023.11.22, project ends at: 2023.12.20, project details: 하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.',
-          // ],
-          // [
-          //   'assistant',
-          //   '[{order: 1, name: "...", duration: 2, description: "..."}, {order: 2, name: "...", duration: 7, description: "..."}, {order: 3, name: "...", duration: 4.5, description: "..."}, ...]',
-          // ],
-          // ['user', 'DESC::project name: 캘린더 앱 개발, project goal: 창업 대회 제출 용 앱 프로토타입 개발, expected outcome: 로그인 기능과 일정 생성 기능, 그리고 monthly, weekly, daily calendar에 일정을 표시해주는 기능이 포함된 앱, project starts at: 2023.11.22, project ends at: 2023.12.20, project details: 하루에 프로젝트에 사용할 수 있는 시간은 최대 5시간. 데이터 모델링과 UI 디자인 작업, 프론트엔드 및 백엔드 개발, DB 구축까지 필요함. 디자이너 1명, 데이터 모델러 1명, 개발자 3명이 작업할 예정.'],
-          // [
-          //   'assistant',
-          //   '{reasonForRecommendation:"....",colorlist:["#000000","#000000","#000000","#000000","#000000"]}',
-          // ],
-          ['user', inputText],
-        ],
-        {temperature: 0},
-      );
-      console.log(response);
-    } catch (e) {
-      console.log(e.message);
-      return;
+          {temperature: 0},
+        );
+        // console.log(response);
+        const parsedResponse = JSON.parse(response);
+        console.log(parsedResponse);
+        const AiTasks = parsedResponse.map((parsedTask, index) => {
+          return {
+            order: parsedTask.order,
+            name: parsedTask.name,
+            duration: parsedTask.duration,
+            description: parsedTask.description,
+          };
+        });
+        console.log(AiTasks);
+        setModalVisible(false);
+        navigation.navigate('AddTask', {
+          userId: userId,
+          project: project,
+          tasks: AiTasks,
+        });
+      } catch (e) {
+        console.log(e.message);
+        return;
+      }
     }
   }
 
@@ -303,7 +356,7 @@ const AddProjectScreen = () => {
             onChange={onChangeProjectDetails}
           />
         </View>
-        <CreateButton title={'Next'} onCreate={submitProject} />
+        <CreateButton title={'Next'} onCreate={generateTasksWithAI} />
       </View>
       <ProjectDatePicker
         visible={openStartDatePicker}
@@ -314,6 +367,10 @@ const AddProjectScreen = () => {
         visible={openEndDatePicker}
         setVisible={setOpenEndDatePicker}
         setDate={setEnd}
+      />
+      <WaitTaskModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
       />
     </ScrollView>
   );

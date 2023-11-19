@@ -175,7 +175,7 @@ const AddEventScreen = () => {
       setEvent(cp);
       console.log(event);
       axios
-        .post('http://192.168.35.93:3000/event/create', {
+        .post('https://api.calendar-isaac-isaac-isaac.shop/event/create', {
           event: event,
         })
         .then(response => {
@@ -186,8 +186,7 @@ const AddEventScreen = () => {
         })
         .catch(error => {
           Alert.alert(error);
-        })
-        .then(() => {});
+        });
     }
   };
 
@@ -301,6 +300,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     gap: 4,
     padding: 10,
+    alignItems: 'center',
   },
   baseTextInputBox: {
     flexDirection: 'row',

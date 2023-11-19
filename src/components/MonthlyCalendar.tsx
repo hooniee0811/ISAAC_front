@@ -1,14 +1,5 @@
 import axios from 'axios';
-import {
-  addDays,
-  endOfMonth,
-  endOfWeek,
-  setHours,
-  setMinutes,
-  startOfMonth,
-  startOfWeek,
-  subDays,
-} from 'date-fns';
+import {addDays, setHours, setMinutes} from 'date-fns';
 import React, {useEffect, useState} from 'react';
 import {Text, StyleSheet, View, Alert} from 'react-native';
 import {useIsFocused} from '@react-navigation/native';
@@ -16,6 +7,8 @@ import {useIsFocused} from '@react-navigation/native';
 type Props = {
   startDateOfCalendar: Date;
   endDateOfCalendar: Date;
+  year: number;
+  month: number;
   userId: string;
 };
 
@@ -39,6 +32,29 @@ type EventDuration = {
   event_id: string;
 };
 
+type Task = {
+  id: string;
+  task_order: number;
+  task_name: string;
+  task_time_required: number;
+  task_description: string;
+  createdAt: Date;
+  updatedAt: Date;
+  user_id: string;
+  tag_id: string;
+  proj_id: string;
+};
+
+type TaskDuration = {
+  id: number;
+  task_dur_start_date: Date;
+  task_dur_end_date: Date;
+  createdAt: Date;
+  updatedAt: Date;
+  user_id: string;
+  task_id: string;
+};
+
 const MonthlyCanlendar = (props: Props) => {
   const today = new Date();
   const weekList = month(props.startDateOfCalendar, props.endDateOfCalendar);
@@ -47,33 +63,37 @@ const MonthlyCanlendar = (props: Props) => {
   const [calendar, setCalendar] = useState<Date[][]>(weekList);
   const [events, setEvents] = useState<Event[]>([]);
   const [eventDurations, setEventDurations] = useState<EventDuration[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [taskDurations, setTaskDurations] = useState<TaskDuration[]>([]);
   const isFocused = useIsFocused();
 
-  const onPress = () => {};
-
   useEffect(() => {
-    axios
-      .get(`http://192.168.35.93:3000/calendar/monthly/${props.userId}/2023/11`)
-      .then(res => {
-        setEvents(res.data.events);
-        setEventDurations(res.data.event_durations);
-        console.log(res.data.events);
-        console.log(res.data.event_durations);
-        console.log(calendar);
-        console.log(setMinutes(setHours(new Date(), 0), 0));
-      })
-      .catch(error => {
-        // Alert.alert(error);
-      });
-  }, [isFocused]);
+    if (isFocused) {
+      setCalendar(weekList);
+      axios
+        .get(
+          `https://api.calendar-isaac-isaac-isaac.shop/calendar/monthly/${props.userId}/${props.startDateOfCalendar}/${props.endDateOfCalendar}`,
+        )
+        .then(res => {
+          const data = res.data;
+          setEvents(data.events);
+          setEventDurations(data.event_durations);
+          setTasks(data.tasks);
+          setTaskDurations(data.task_durations);
+        })
+        .catch(error => {
+          Alert.alert(error);
+        });
+    }
+  }, [isFocused, props.month]);
 
   return (
     <View style={styles.container}>
       <View style={styles.dayNameContainer}>
         {dayNames.map((dayName, index) => (
-          <Text key={index} style={styles.dayNameText}>
-            {dayName}
-          </Text>
+          <View key={index}>
+            <Text style={styles.dayNameText}>{dayName}</Text>
+          </View>
         ))}
       </View>
       <View style={styles.calendarContainer}>
@@ -83,7 +103,7 @@ const MonthlyCanlendar = (props: Props) => {
               <View key={index} style={styles.dayContainer}>
                 <Text
                   style={
-                    today.getMonth() === day.getMonth()
+                    props.month === day.getMonth()
                       ? day.getDay() != 0 && day.getDay() != 6
                         ? styles.dateText
                         : day.getDay() === 0
@@ -94,14 +114,30 @@ const MonthlyCanlendar = (props: Props) => {
                   {day.getDate()}
                 </Text>
                 {eventDurations.map((eventDuration, index) => (
-                  <View>
+                  <View key={eventDuration.id}>
                     {setMinutes(
                       setHours(new Date(eventDuration.event_dur_start_date), 0),
                       0,
                     ) <= day &&
                       new Date(eventDuration.event_dur_end_date) >= day && (
-                        <Text style={styles.eventText} key={eventDuration.id}>
+                        <Text style={styles.eventText}>
                           {events[index].event_name}
+                        </Text>
+                      )}
+                  </View>
+                ))}
+                {taskDurations.map((taskDuration, index) => (
+                  <View key={taskDuration.id}>
+                    {setMinutes(
+                      setHours(new Date(taskDuration.task_dur_start_date), 0),
+                      0,
+                    ) <= day &&
+                      new Date(taskDuration.task_dur_end_date) >= day && (
+                        <Text style={styles.taskText}>
+                          {
+                            tasks.find(task => task.id === taskDuration.task_id)
+                              .task_name
+                          }
                         </Text>
                       )}
                   </View>
@@ -163,6 +199,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F7FE',
     borderRadius: 4,
     alignItems: 'center',
+    overflow: 'hidden',
   },
   dateText: {
     fontFamily: 'Pretendard',
@@ -198,6 +235,21 @@ const styles = StyleSheet.create({
     borderLeftColor: '#B1BFF4',
     borderLeftWidth: 2,
     paddingLeft: 4,
+    marginBottom: 2,
+  },
+  taskText: {
+    width: 50,
+    fontFamily: 'Pretendard',
+    fontSize: 10,
+    fontWeight: '300',
+    letterSpacing: 0.1,
+    color: 'black',
+    borderTopColor: '#B1BFF4',
+    borderBottomColor: '#B1BFF4',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    paddingLeft: 4,
+    marginBottom: 2,
   },
 });
 

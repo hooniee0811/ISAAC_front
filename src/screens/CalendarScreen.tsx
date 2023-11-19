@@ -11,6 +11,7 @@ import {
   endOfWeek,
   startOfMonth,
   startOfWeek,
+  subMonths,
 } from 'date-fns';
 import MonthlyCanlendar from '../components/MonthlyCalendar';
 import CalendarViewTypeSelectModal from '../components/CalendarViewTypeSelectModal';
@@ -45,11 +46,22 @@ const CalendarScreen = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [showRoutines, setShowRoutines] = useState<boolean>(true);
 
+  useEffect(() => {
+    setYear(currentMonth.getFullYear());
+    setMonth(currentMonth.getMonth());
+    setStartDateOfCalendar(startOfWeek(startOfMonth(currentMonth)));
+    setEndDateOfCalendar(endOfWeek(endOfMonth(currentMonth)));
+  }, [currentMonth]);
+
+  console.log(currentMonth);
+
   return (
     <GestureHandlerRootView>
       <TopAppBar />
       {viewType === 'Monthly' && (
         <MonthlyCalendarMenuBar
+          currentMonth={currentMonth}
+          setCurrentMonth={setCurrentMonth}
           year={year}
           month={month}
           setOpenModal={setOpenModal}
@@ -90,6 +102,8 @@ const CalendarScreen = () => {
         <MonthlyCanlendar
           startDateOfCalendar={startDateOfCalendar}
           endDateOfCalendar={endDateOfCalendar}
+          year={year}
+          month={month}
           userId={userId}
         />
       )}

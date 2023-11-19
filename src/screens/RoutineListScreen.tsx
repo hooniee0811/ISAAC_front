@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import {SettingsStackParamList} from '../navigators/SettingsStackNavigator';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
 import axios from 'axios';
@@ -49,28 +49,33 @@ const RoutineListScreen = () => {
   >([]);
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const [reRender, setReRender] = useState<boolean>(true);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    axios
-      .get(
-        `http://192.168.35.93:3000/routine/list/9199f5db-1d16-45a6-a2df-6272bca46163`,
-      )
-      .then(res => {
-        console.log(res.data.routines);
-        console.log(res.data.routine_durations);
-        setRoutines(res.data.routines);
-        setRoutineDurations(res.data.routine_durations);
-        console.log(routines);
-        console.log(routineDurations);
-      })
-      .catch(error => {
-        Alert.alert(error);
-      });
-  }, [reRender]);
+    if (isFocused) {
+      axios
+        .get(
+          `https://api.calendar-isaac-isaac-isaac.shop/routine/list/${userId}`,
+        )
+        .then(res => {
+          console.log(res.data.routines);
+          console.log(res.data.routine_durations);
+          setRoutines(res.data.routines);
+          setRoutineDurations(res.data.routine_durations);
+          console.log(routines);
+          console.log(routineDurations);
+        })
+        .catch(error => {
+          Alert.alert(error);
+        });
+    }
+  }, [reRender, isFocused]);
 
   const deleteRoutine = (routineId: string) => {
     axios
-      .get(`http://192.168.35.93:3000/routine/delete/${routineId}`)
+      .get(
+        `https://api.calendar-isaac-isaac-isaac.shop/routine/delete/${routineId}`,
+      )
       .then(res => {
         Alert.alert(res.data.message);
         setReRender(!reRender);
@@ -84,15 +89,48 @@ const RoutineListScreen = () => {
     navigation.navigate('AddRoutine', {userId: userId});
   };
 
+  const onEditRoutine = (index: number) => {
+    const targetRoutine = routines[index];
+    const targetRoutineDurations = routineDurations.filter(
+      routineDuration => routineDuration.routine_id === targetRoutine.id,
+    );
+    const days = targetRoutineDurations.map((targetRoutineDuration, index) => {
+      return targetRoutineDuration.routine_dur_day;
+    });
+
+    navigation.navigate('EditRoutine', {
+      userId: userId,
+      routine: {
+        id: targetRoutine.id,
+        name: targetRoutine.routine_name,
+        memo: targetRoutine.routine_memo,
+        days: days,
+        start: {
+          hour: targetRoutineDurations[0].routine_dur_start_time,
+          minute: targetRoutineDurations[0].routine_dur_start_minute,
+        },
+        end: {
+          hour: targetRoutineDurations[0].routine_dur_end_time,
+          minute: targetRoutineDurations[0].routine_dur_end_minute,
+        },
+        flexibility: 'Strict',
+        tag: targetRoutine.tag_id,
+        user: targetRoutine.user_id,
+      },
+    });
+  };
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       {routines.map((routine, index) => {
         return (
           <View style={styles.routineContainer} key={routine.id}>
             <View style={styles.routineNameContainer}>
               <Text style={styles.routineNameText}>{routine.routine_name}</Text>
               <View style={styles.routineBtnContainer}>
-                <Text style={styles.editText}>Edit</Text>
+                <TouchableOpacity onPress={() => onEditRoutine(index)}>
+                  <Text style={styles.editText}>Edit</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => deleteRoutine(routine.id)}>
                   <FontIcon name="trash-o" size={20} color="#7A7A7A" />
                 </TouchableOpacity>
@@ -101,11 +139,9 @@ const RoutineListScreen = () => {
             <View style={styles.dateContainer}>
               {routineDurations.map((routineDuration, index) => {
                 return (
-                  <>
+                  <View key={routineDuration.id}>
                     {routine.id === routineDuration.routine_id && (
-                      <Text
-                        style={styles.dateText}
-                        key={routineDuration.id}>{`${
+                      <Text style={styles.dateText}>{`${
                         dayNames[routineDuration.routine_dur_day]
                       } ${
                         routineDuration.routine_dur_start_time < 10
@@ -125,7 +161,7 @@ const RoutineListScreen = () => {
                           : routineDuration.routine_dur_end_minute
                       }`}</Text>
                     )}
-                  </>
+                  </View>
                 );
               })}
             </View>
@@ -144,10 +180,11 @@ const RoutineListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     paddingTop: 8,
-    paddingHorizontal: 32,
     gap: 8,
+    alignItems: 'center',
   },
   routineContainer: {
+    width: 340,
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 12,
@@ -195,6 +232,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   addRoutineBtn: {
+    width: 340,
     backgroundColor: '#F5F7FE',
     borderRadius: 12,
     flexDirection: 'row',

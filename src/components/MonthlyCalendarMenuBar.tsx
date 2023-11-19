@@ -1,9 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import FIcon from 'react-native-vector-icons/Feather';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
+import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {addMonths, format, subMonths} from 'date-fns';
 
 type Props = {
+  currentMonth: Date;
+  setCurrentMonth: React.Dispatch<React.SetStateAction<Date>>;
   year: number;
   month: number;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -26,11 +30,26 @@ const MonthlyCalendarMenuBar = (props: Props) => {
     'December',
   ];
 
+  const onNextMonth = () => {
+    props.setCurrentMonth(addMonths(props.currentMonth, 1));
+  };
+  const onPreviousMonth = () => {
+    props.setCurrentMonth(subMonths(props.currentMonth, 1));
+  };
+
   return (
     <View style={styles.menuContainer}>
       <View>
         <Text style={styles.yearText}>{props.year}</Text>
-        <Text style={styles.monthText}>{monthName[props.month]}</Text>
+        <View style={styles.monthContainer}>
+          <Text style={styles.monthText}>{monthName[props.month]}</Text>
+          <TouchableOpacity style={styles.moveBtn} onPress={onPreviousMonth}>
+            <MIcon name="keyboard-arrow-left" size={20} color="#7A7A7A" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.moveBtn} onPress={onNextMonth}>
+            <MIcon name="keyboard-arrow-right" size={20} color="#7A7A7A" />
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.btnContianer}>
         <TouchableOpacity
@@ -60,12 +79,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'black',
   },
+  monthContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   monthText: {
     fontFamily: 'Pretendard',
     fontWeight: '600',
     letterSpacing: 0.1,
     fontSize: 24,
     color: 'black',
+  },
+  moveBtn: {
+    backgroundColor: '#F3F3F3',
+    borderRadius: 4,
   },
   btnContianer: {
     gap: 8,

@@ -23,7 +23,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {SettingsStackParamList} from '../navigators/SettingsStackNavigator';
 import axios from 'axios';
 
-type Props = StackScreenProps<SettingsStackParamList, 'AddRoutine'>;
+type Props = StackScreenProps<SettingsStackParamList, 'EditRoutine'>;
 
 export type Routine = {
   id: string | number[];
@@ -43,28 +43,12 @@ export type Routine = {
   user: string | number[];
 };
 
-const AddRoutineScreen = () => {
+const EditRoutineScreen = () => {
   const navigation = useNavigation<Props['navigation']>();
   const route = useRoute<Props['route']>();
   const userId = route.params.userId;
 
-  const [routine, setRoutine] = useState<Routine>({
-    id: uuid.v4(),
-    name: '',
-    memo: '',
-    days: [],
-    start: {
-      hour: 8,
-      minute: 0,
-    },
-    end: {
-      hour: 9,
-      minute: 0,
-    },
-    flexibility: 'Strict',
-    tag: '012b077b-5b86-409e-8f08-6682f6bb62df',
-    user: userId,
-  });
+  const [routine, setRoutine] = useState<Routine>(route.params.routine);
 
   //fetch (useEffect)
   const tag = {
@@ -148,7 +132,7 @@ const AddRoutineScreen = () => {
       Alert.alert('종료 시간이 시작 시간보다 빠릅니다!');
     } else {
       axios
-        .post('https://api.calendar-isaac-isaac-isaac.shop/routine/create', {
+        .post('https://api.calendar-isaac-isaac-isaac.shop/routine/edit', {
           routine: routine,
         })
         .then(response => {
@@ -442,4 +426,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddRoutineScreen;
+export default EditRoutineScreen;

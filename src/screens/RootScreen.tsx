@@ -11,6 +11,7 @@ import {
   TextInputChangeEventData,
   Alert,
 } from 'react-native';
+import uuid from 'react-native-uuid';
 // import signInWithGoogle from '../images/SignInWithGoogle.png'
 
 type Props = {
@@ -29,23 +30,46 @@ const RootScreen = (props: Props) => {
     setPw(evt.nativeEvent.text);
   };
   const login = () => {
-    // axios
-    //   .post('http://192.168.35.93:3000/user/signin', {
-    //     loginId: id,
-    //     password: pw,
-    //   })
-    //   .then(response => {
-    //     if (response.data.userId) {
-    //       props.setUserId(response.data.userId);
-    //     } else {
-    //       Alert.alert(response.data.message);
-    //     }
-    //   })
-    //   .catch(error => {
-    //     Alert.alert(error);
-    //   });
+    axios
+      .post('https://api.calendar-isaac-isaac-isaac.shop/user/signin', {
+        loginId: id,
+        password: pw,
+      })
+      .then(response => {
+        if (response.data.userId) {
+          props.setUserId(response.data.userId);
+        } else {
+          Alert.alert(response.data.message);
+        }
+      })
+      .catch(error => {
+        Alert.alert(error);
+      });
 
-    props.setUserId('9199f5db-1d16-45a6-a2df-6272bca46163');
+    // props.setUserId('9199f5db-1d16-45a6-a2df-6272bca46163');
+  };
+
+  const signUp = () => {
+    axios
+      .post('https://api.calendar-isaac-isaac-isaac.shop/user/signup', {
+        user_id: uuid.v4(),
+        loginId: id,
+        password: pw,
+        default_tag_id: uuid.v4(),
+        routine_default_tag_id: uuid.v4(),
+      })
+      .then(response => {
+        if (response.data.userId) {
+          props.setUserId(response.data.userId);
+        } else {
+          Alert.alert(response.data.message);
+        }
+      })
+      .catch(error => {
+        Alert.alert(error);
+      });
+
+    // props.setUserId('9199f5db-1d16-45a6-a2df-6272bca46163');
   };
 
   return (

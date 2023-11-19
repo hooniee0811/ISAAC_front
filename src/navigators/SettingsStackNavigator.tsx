@@ -8,8 +8,10 @@ import TagListScreen from '../screens/TagListScreen';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {BottomTabParamList} from './BottomTabNavigator';
 import HeaderTitle from '../components/HeaderTitle';
-import AddRoutineScreen from '../screens/AddRoutineScreen';
+import AddRoutineScreen, {Routine} from '../screens/AddRoutineScreen';
 import {useRoute} from '@react-navigation/native';
+import TaskListScreen from '../screens/TaskListScreen';
+import EditRoutineScreen from '../screens/EditRoutineScreen';
 
 type Props = BottomTabScreenProps<BottomTabParamList, 'Settings'>;
 
@@ -18,8 +20,10 @@ export type SettingsStackParamList = {
   Notification: {userId: string};
   Routines: {userId: string};
   AddRoutine: {userId: string};
+  EditRoutine: {userId: string; routine: Routine};
   Tags: {userId: string};
   Projects: {userId: string};
+  Tasks: {userId: string; projectId: string};
 };
 
 const Stack = createStackNavigator<SettingsStackParamList>();
@@ -55,6 +59,11 @@ const SettingsStackNavigator: FC<Props> = () => {
         initialParams={{userId: userId}}
       />
       <Stack.Screen
+        name="EditRoutine"
+        component={EditRoutineScreen}
+        initialParams={{userId: userId}}
+      />
+      <Stack.Screen
         name="Tags"
         component={TagListScreen}
         initialParams={{userId: userId}}
@@ -62,6 +71,11 @@ const SettingsStackNavigator: FC<Props> = () => {
       <Stack.Screen
         name="Projects"
         component={ProjectListScreen}
+        initialParams={{userId: userId}}
+      />
+      <Stack.Screen
+        name="Tasks"
+        component={TaskListScreen}
         initialParams={{userId: userId}}
       />
     </Stack.Navigator>

@@ -11,7 +11,7 @@ import {useRoute} from '@react-navigation/native';
 
 type Props = BottomTabScreenProps<BottomTabParamList, 'AddSchedule'>;
 
-type AiTask = {
+export type AiTask = {
   order: number;
   name: string;
   duration: number;
