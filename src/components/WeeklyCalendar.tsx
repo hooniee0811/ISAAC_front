@@ -1,19 +1,57 @@
-import {addDays, addHours, endOfWeek, startOfDay, startOfWeek} from 'date-fns';
-import React, {useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import Timetable from 'react-native-calendar-timetable';
+import {addDays} from 'date-fns';
+import React, {useEffect, useState} from 'react';
+import {Alert, StyleSheet, Text, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import {EventDuration, Task, TaskDuration} from './MonthlyCalendar';
+import {useIsFocused} from '@react-navigation/native';
+import axios from 'axios';
 
 type Props = {
   startDateOfCalendar: Date;
   userId: string;
 };
 
+export type Routine = {};
+
+export type RoutineDuration = {};
+
 const WeeklyCalendar = (props: Props) => {
   const today = new Date();
   const dateList = week(props.startDateOfCalendar);
   const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  console.log(dateList);
+
+  const [calendar, setCalendar] = useState<Date[]>(dateList);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [eventDurations, setEventDurations] = useState<EventDuration[]>([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [taskDurations, setTaskDurations] = useState<TaskDuration[]>([]);
+  const [routines, setRoutines] = useState<Routine[]>([]);
+  const [routineDurations, setRoutineDurations] = useState<RoutineDuration[]>(
+    [],
+  );
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      setCalendar(dateList);
+      // axios
+      //   .get(
+      //     `https://000.000.000.000:3000/calendar/weekly/${props.userId}/${props.startDateOfCalendar}`,
+      //   )
+      //   .then(res => {
+      //     const data = res.data;
+      //     setEvents(data.events);
+      //     setEventDurations(data.event_durations);
+      //     setTasks(data.tasks);
+      //     setTaskDurations(data.task_durations);
+      //     setRoutines(data.routines);
+      //     setRoutineDurations(data.routine_durations);
+      //   })
+      //   .catch(error => {
+      //     Alert.alert(error);
+      //   });
+    }
+  }, [isFocused, props.startDateOfCalendar]);
 
   return (
     <View style={styles.container}>

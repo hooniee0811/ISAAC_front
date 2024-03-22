@@ -11,7 +11,6 @@ import {
   TextInputChangeEventData,
 } from 'react-native';
 import {Picker} from '@react-native-picker/picker';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import EventRepeatCalendarModal from './EventRepeatCalendarModal';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {format} from 'date-fns';

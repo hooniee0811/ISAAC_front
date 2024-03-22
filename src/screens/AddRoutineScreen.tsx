@@ -153,7 +153,6 @@ const AddRoutineScreen = () => {
         })
         .then(response => {
           Alert.alert(response.data.message);
-          console.log(routine);
           navigation.popToTop();
         })
         .catch(error => {

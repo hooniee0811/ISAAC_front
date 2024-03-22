@@ -56,14 +56,6 @@ type TaskDurationData = {
   task_id: string;
 };
 
-type TaskDuration = {
-  id: number;
-  task_dur_start_date: Date;
-  task_dur_end_date: Date;
-  user_id: string;
-  task_id: string;
-};
-
 const TaskListScreen = () => {
   const navigation = useNavigation<Props['navigation']>();
   const route = useRoute<Props['route']>();
@@ -80,8 +72,6 @@ const TaskListScreen = () => {
           `https://api.calendar-isaac-isaac-isaac.shop/task/list/${projectId}`,
         )
         .then(res => {
-          console.log(res.data.tasks);
-          console.log(res.data.task_durations);
           setTasks(
             res.data.tasks.map((task: TaskData, index: number) => {
               return {
@@ -103,8 +93,6 @@ const TaskListScreen = () => {
         });
     }
   }, [isFocused]);
-
-  console.log(tasks);
 
   const onChangeTaskName = (
     index: number,

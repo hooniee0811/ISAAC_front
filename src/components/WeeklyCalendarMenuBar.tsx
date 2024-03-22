@@ -1,9 +1,12 @@
+import {addDays, subDays} from 'date-fns';
 import React from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import FIcon from 'react-native-vector-icons/Feather';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 type Props = {
+  currentWeek: Date;
+  setCurrentWeek: React.Dispatch<React.SetStateAction<Date>>;
   year: number;
   month: number;
   showRoutines: boolean;
@@ -27,11 +30,25 @@ const WeeklyCalendarMenuBar = (props: Props) => {
     'November',
     'December',
   ];
+
+  const onNextWeek = () => {
+    props.setCurrentWeek(addDays(props.currentWeek, 7));
+  };
+  const onPreviousWeek = () => {
+    props.setCurrentWeek(subDays(props.currentWeek, 7));
+  };
+
   return (
     <View style={styles.menuContainer}>
       <View>
         <Text style={styles.yearText}>{props.year}</Text>
         <Text style={styles.monthText}>{monthName[props.month]}</Text>
+        <TouchableOpacity style={styles.moveBtn} onPress={onPreviousWeek}>
+          <MIcon name="keyboard-arrow-left" size={20} color="#7A7A7A" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.moveBtn} onPress={onNextWeek}>
+          <MIcon name="keyboard-arrow-right" size={20} color="#7A7A7A" />
+        </TouchableOpacity>
       </View>
       <View style={styles.btnContianer}>
         <TouchableOpacity
@@ -79,6 +96,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
     fontSize: 24,
     color: 'black',
+  },
+  moveBtn: {
+    backgroundColor: '#F3F3F3',
+    borderRadius: 4,
   },
   btnContianer: {
     gap: 8,

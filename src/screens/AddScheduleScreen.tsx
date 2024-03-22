@@ -1,16 +1,8 @@
-import {
-  CompositeScreenProps,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {FC} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {AddScheduleStackParamList} from '../navigators/AddScheduleStackNavigator';
-import TopAppBar from '../components/TopAppBar';
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {BottomTabParamList} from '../navigators/BottomTabNavigator';
-import uuid from 'react-native-uuid';
 
 type Props = StackScreenProps<AddScheduleStackParamList, 'RootAddSchedule'>;
 // type Props = CompositeScreenProps<

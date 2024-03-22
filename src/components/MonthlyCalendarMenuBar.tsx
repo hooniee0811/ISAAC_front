@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import FIcon from 'react-native-vector-icons/Feather';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
-import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {addMonths, format, subMonths} from 'date-fns';
+import {addMonths, subMonths} from 'date-fns';
 
 type Props = {
   currentMonth: Date;

@@ -15,7 +15,6 @@ import SimIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MatComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import FonIcon from 'react-native-vector-icons/FontAwesome';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import uuid from 'react-native-uuid';
 import CreateButton from '../components/CreateButton';
 import DatePicker from 'react-native-date-picker';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -137,7 +136,6 @@ const EditRoutineScreen = () => {
         })
         .then(response => {
           Alert.alert(response.data.message);
-          console.log(routine);
           navigation.popToTop();
         })
         .catch(error => {

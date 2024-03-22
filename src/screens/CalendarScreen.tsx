@@ -1,18 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import TopAppBar from '../components/TopAppBar';
-import {Alert, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
-import {
-  GestureHandlerRootView,
-  TouchableOpacity,
-} from 'react-native-gesture-handler';
-import {
-  addMonths,
-  endOfMonth,
-  endOfWeek,
-  startOfMonth,
-  startOfWeek,
-  subMonths,
-} from 'date-fns';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {endOfMonth, endOfWeek, startOfMonth, startOfWeek} from 'date-fns';
 import MonthlyCanlendar from '../components/MonthlyCalendar';
 import CalendarViewTypeSelectModal from '../components/CalendarViewTypeSelectModal';
 import WeeklyCalendar from '../components/WeeklyCalendar';
@@ -24,6 +13,9 @@ import axios from 'axios';
 import {useRoute} from '@react-navigation/native';
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {BottomTabParamList} from '../navigators/BottomTabNavigator';
+import MonthlyCalendarScreen from './MonthlyCalendarScreen';
+import WeeklyCalendarScreen from './WeeklyCalendarScreen';
+import DailyCalendarScreen from './DailyCalendarScreen';
 
 type Props = BottomTabScreenProps<BottomTabParamList, 'Calendar'>;
 
@@ -33,45 +25,66 @@ const CalendarScreen = () => {
   const today = new Date();
 
   const [currentMonth, setCurrentMonth] = useState<Date>(today);
-  const [startDateOfCalendar, setStartDateOfCalendar] = useState<Date>(
-    startOfWeek(startOfMonth(currentMonth)),
-  );
-  const [endDateOfCalendar, setEndDateOfCalendar] = useState<Date>(
-    endOfWeek(endOfMonth(currentMonth)),
-  );
+  const [currentWeek, setCurrentWeek] = useState<Date>(today);
+  const [currentDay, setCurrentDay] = useState<Date>(today);
+
   const [viewType, setViewType] = useState<string>('Monthly');
   const [year, setYear] = useState<number>(currentMonth.getFullYear());
   const [month, setMonth] = useState<number>(currentMonth.getMonth());
-  const [date, setDate] = useState<number>(today.getDate());
+  const [date, setDate] = useState<number>(currentDay.getDate());
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [showRoutines, setShowRoutines] = useState<boolean>(true);
-
-  useEffect(() => {
-    setYear(currentMonth.getFullYear());
-    setMonth(currentMonth.getMonth());
-    setStartDateOfCalendar(startOfWeek(startOfMonth(currentMonth)));
-    setEndDateOfCalendar(endOfWeek(endOfMonth(currentMonth)));
-  }, [currentMonth]);
-
-  console.log(currentMonth);
 
   return (
     <GestureHandlerRootView>
       <TopAppBar />
       {viewType === 'Monthly' && (
+        <MonthlyCalendarScreen
+          currentMonth={currentMonth}
+          setCurrentMonth={setCurrentMonth}
+          setOpenModal={setOpenModal}
+          viewType={viewType}
+          userId={userId}
+        />
+      )}
+      {viewType === 'Weekly' && (
+        <WeeklyCalendarScreen
+          currentWeek={currentWeek}
+          setCurrentWeek={setCurrentWeek}
+          setOpenModal={setOpenModal}
+          viewType={viewType}
+          userId={userId}
+          showRoutines={showRoutines}
+          setShowRoutines={setShowRoutines}
+        />
+      )}
+      {viewType === 'Daily' && (
+        <DailyCalendarScreen
+          currentDay={currentDay}
+          setCurrentDay={setCurrentDay}
+          setOpenModal={setOpenModal}
+          viewType={viewType}
+          userId={userId}
+          showRoutines={showRoutines}
+          setShowRoutines={setShowRoutines}
+        />
+      )}
+      {/* {viewType === 'Monthly' && (
         <MonthlyCalendarMenuBar
           currentMonth={currentMonth}
           setCurrentMonth={setCurrentMonth}
-          year={year}
-          month={month}
+          year={currentMonth.getFullYear()}
+          month={currentMonth.getMonth()}
           setOpenModal={setOpenModal}
           viewType={viewType}
         />
       )}
       {viewType === 'Weekly' && (
         <WeeklyCalendarMenuBar
-          year={year}
-          month={month}
+          currentWeek={currentWeek}
+          setCurrentWeek={setCurrentWeek}
+          year={currentWeek.getFullYear()}
+          month={currentWeek.getMonth()}
           showRoutines={showRoutines}
           setShowRoutines={setShowRoutines}
           setOpenModal={setOpenModal}
@@ -88,20 +101,16 @@ const CalendarScreen = () => {
           setOpenModal={setOpenModal}
           viewType={viewType}
         />
-      )}
+      )} */}
       <CalendarViewTypeSelectModal
         openModal={openModal}
         setOpenModal={setOpenModal}
         setViewType={setViewType}
-        setYear={setYear}
-        setMonth={setMonth}
-        setStartDateOfCalendar={setStartDateOfCalendar}
-        setEndDateOfCalendar={setEndDateOfCalendar}
       />
-      {viewType === 'Monthly' && (
+      {/* {viewType === 'Monthly' && (
         <MonthlyCanlendar
-          startDateOfCalendar={startDateOfCalendar}
-          endDateOfCalendar={endDateOfCalendar}
+          startDateOfCalendar={startDateOfMonthlyCalendar}
+          endDateOfCalendar={endDateOfMonthlyCalendar}
           year={year}
           month={month}
           userId={userId}
@@ -109,16 +118,13 @@ const CalendarScreen = () => {
       )}
       {viewType === 'Weekly' && (
         <WeeklyCalendar
-          startDateOfCalendar={startDateOfCalendar}
+          startDateOfCalendar={startDateOfWeeklyCalendar}
           userId={userId}
         />
       )}
       {viewType === 'Daily' && (
-        <DailyCalendar
-          startDateOfCalendar={startDateOfCalendar}
-          userId={userId}
-        />
-      )}
+        <DailyCalendar currentDay={currentDay} userId={userId} />
+      )} */}
     </GestureHandlerRootView>
   );
 };

@@ -57,7 +57,14 @@ const AddTaskScreen = () => {
   const navigation = useNavigation<Props['navigation']>();
   const route = useRoute<Props['route']>();
   const AiTasks = route.params.tasks;
-  const projectProp = route.params.project;
+  const projectProp = JSON.parse(route.params.project);
+  const [editDuration, setEditDuration] = useState<boolean>(false);
+  const activateTextInput = () => {
+    setEditDuration(true);
+  };
+  const deActivateTextInput = () => {
+    setEditDuration(false);
+  };
 
   const [tasks, setTasks] = useState<Task[]>(
     AiTasks.map((AiTask, index) => {
@@ -66,7 +73,7 @@ const AddTaskScreen = () => {
         id: uuid.v4(),
         user_id: route.params.userId,
         tag_id: 'da54cea4-bf89-42dc-b54d-be2d10bbe525',
-        proj_id: route.params.project.id,
+        proj_id: projectProp.id,
       };
     }),
   );
@@ -80,11 +87,6 @@ const AddTaskScreen = () => {
     end: new Date(projectProp.end),
     details: projectProp.details,
   });
-
-  console.log(tasks);
-  console.log(project);
-  // console.log(projectProp.start);
-  // console.log(project.start);
 
   const onChangeTaskName = (
     index: number,
@@ -155,7 +157,7 @@ const AddTaskScreen = () => {
       id: uuid.v4(),
       user_id: route.params.userId,
       tag_id: 'da54cea4-bf89-42dc-b54d-be2d10bbe525',
-      proj_id: route.params.project.id,
+      proj_id: projectProp.id,
     });
     setTasks(cp);
   };
@@ -182,13 +184,6 @@ const AddTaskScreen = () => {
   return (
     <ScrollView style={styles.container}>
       {tasks.map((task, index) => {
-        const [editDuration, setEditDuration] = useState<boolean>(false);
-        const activateTextInput = () => {
-          setEditDuration(true);
-        };
-        const deActivateTextInput = () => {
-          setEditDuration(false);
-        };
         return (
           <View key={JSON.stringify(task.id)} style={styles.taskContainer}>
             <View style={styles.taskNameContainer}>
@@ -278,7 +273,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   durationText: {
-    width: 60,
     textAlign: 'center',
     backgroundColor: 'white',
     paddingHorizontal: 8,

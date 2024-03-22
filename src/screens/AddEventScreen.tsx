@@ -173,7 +173,6 @@ const AddEventScreen = () => {
         cp.durations.push({start: start, end: end});
       }
       setEvent(cp);
-      console.log(event);
       axios
         .post('https://api.calendar-isaac-isaac-isaac.shop/event/create', {
           event: event,

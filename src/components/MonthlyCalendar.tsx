@@ -12,7 +12,7 @@ type Props = {
   userId: string;
 };
 
-type Event = {
+export type Event = {
   id: string;
   event_name: string;
   event_memo: string;
@@ -22,7 +22,7 @@ type Event = {
   tag_id: string;
 };
 
-type EventDuration = {
+export type EventDuration = {
   id: number;
   event_dur_start_date: Date;
   event_dur_end_date: Date;
@@ -32,7 +32,7 @@ type EventDuration = {
   event_id: string;
 };
 
-type Task = {
+export type Task = {
   id: string;
   task_order: number;
   task_name: string;
@@ -45,7 +45,7 @@ type Task = {
   proj_id: string;
 };
 
-type TaskDuration = {
+export type TaskDuration = {
   id: number;
   task_dur_start_date: Date;
   task_dur_end_date: Date;
@@ -56,11 +56,12 @@ type TaskDuration = {
 };
 
 const MonthlyCanlendar = (props: Props) => {
-  const today = new Date();
   const weekList = month(props.startDateOfCalendar, props.endDateOfCalendar);
   const dayNames = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  const [calendar, setCalendar] = useState<Date[][]>(weekList);
+  const [calendar, setCalendar] = useState<Date[][]>(
+    month(props.startDateOfCalendar, props.endDateOfCalendar),
+  );
   const [events, setEvents] = useState<Event[]>([]);
   const [eventDurations, setEventDurations] = useState<EventDuration[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -69,7 +70,7 @@ const MonthlyCanlendar = (props: Props) => {
 
   useEffect(() => {
     if (isFocused) {
-      setCalendar(weekList);
+      setCalendar(month(props.startDateOfCalendar, props.endDateOfCalendar));
       axios
         .get(
           `https://api.calendar-isaac-isaac-isaac.shop/calendar/monthly/${props.userId}/${props.startDateOfCalendar}/${props.endDateOfCalendar}`,
@@ -85,7 +86,11 @@ const MonthlyCanlendar = (props: Props) => {
           Alert.alert(error);
         });
     }
-  }, [isFocused, props.month]);
+  }, [isFocused, props.startDateOfCalendar]);
+
+  useEffect(() => {
+    console.log(calendar);
+  }, [calendar]);
 
   return (
     <View style={styles.container}>

@@ -58,12 +58,8 @@ const RoutineListScreen = () => {
           `https://api.calendar-isaac-isaac-isaac.shop/routine/list/${userId}`,
         )
         .then(res => {
-          console.log(res.data.routines);
-          console.log(res.data.routine_durations);
           setRoutines(res.data.routines);
           setRoutineDurations(res.data.routine_durations);
-          console.log(routines);
-          console.log(routineDurations);
         })
         .catch(error => {
           Alert.alert(error);
@@ -165,7 +161,7 @@ const RoutineListScreen = () => {
                 );
               })}
             </View>
-            <View></View>
+            <Text style={styles.memoText}>{routine.routine_memo}</Text>
           </View>
         );
       })}
@@ -229,6 +225,13 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '400',
     color: 'black',
+    alignSelf: 'flex-start',
+  },
+  memoText: {
+    fontFamily: 'Pretendard',
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#7A7A7A',
     alignSelf: 'flex-start',
   },
   addRoutineBtn: {

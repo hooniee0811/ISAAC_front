@@ -1,6 +1,5 @@
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
+import {StyleSheet, Text, View} from 'react-native';
 
 const TopAppBar = () => {
   return (

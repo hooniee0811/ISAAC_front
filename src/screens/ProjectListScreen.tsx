@@ -12,7 +12,6 @@ import {
 import {SettingsStackParamList} from '../navigators/SettingsStackNavigator';
 import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
-import MatIcon from 'react-native-vector-icons/MaterialIcons';
 import {format} from 'date-fns';
 
 type Props = StackScreenProps<SettingsStackParamList, 'Projects'>;

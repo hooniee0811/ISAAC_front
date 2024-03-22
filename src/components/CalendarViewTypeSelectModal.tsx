@@ -6,10 +6,6 @@ type Props = {
   openModal: boolean;
   setViewType: React.Dispatch<React.SetStateAction<string>>;
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
-  setYear: React.Dispatch<React.SetStateAction<number>>;
-  setMonth: React.Dispatch<React.SetStateAction<number>>;
-  setStartDateOfCalendar: React.Dispatch<React.SetStateAction<Date>>;
-  setEndDateOfCalendar: React.Dispatch<React.SetStateAction<Date>>;
 };
 
 const CalendarViewTypeSelectModal = (props: Props) => {
@@ -17,20 +13,18 @@ const CalendarViewTypeSelectModal = (props: Props) => {
     const today = new Date();
 
     props.setViewType(value);
-    props.setYear(today.getFullYear());
-    props.setMonth(today.getMonth());
     props.setOpenModal(false);
 
-    if (value === 'Monthly') {
-      props.setStartDateOfCalendar(startOfWeek(startOfMonth(today)));
-      props.setEndDateOfCalendar(endOfWeek(endOfMonth(today)));
-    } else if (value === 'Weekly') {
-      props.setStartDateOfCalendar(startOfWeek(today));
-      props.setEndDateOfCalendar(endOfWeek(today));
-    } else if (value === 'Daily') {
-      props.setStartDateOfCalendar(today);
-      props.setEndDateOfCalendar(today);
-    }
+    // if (value === 'Monthly') {
+    //   props.setStartDateOfCalendar(startOfWeek(startOfMonth(today)));
+    //   props.setEndDateOfCalendar(endOfWeek(endOfMonth(today)));
+    // } else if (value === 'Weekly') {
+    //   props.setStartDateOfCalendar(startOfWeek(today));
+    //   props.setEndDateOfCalendar(endOfWeek(today));
+    // } else if (value === 'Daily') {
+    //   props.setStartDateOfCalendar(today);
+    //   props.setEndDateOfCalendar(today);
+    // }
   };
 
   return (

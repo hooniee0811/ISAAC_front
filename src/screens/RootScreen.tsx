@@ -5,7 +5,6 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Image,
   TextInput,
   NativeSyntheticEvent,
   TextInputChangeEventData,
@@ -30,23 +29,23 @@ const RootScreen = (props: Props) => {
     setPw(evt.nativeEvent.text);
   };
   const login = () => {
-    axios
-      .post('https://api.calendar-isaac-isaac-isaac.shop/user/signin', {
-        loginId: id,
-        password: pw,
-      })
-      .then(response => {
-        if (response.data.userId) {
-          props.setUserId(response.data.userId);
-        } else {
-          Alert.alert(response.data.message);
-        }
-      })
-      .catch(error => {
-        Alert.alert(error);
-      });
+    // axios
+    //   .post('https://api.calendar-isaac-isaac-isaac.shop/user/signin', {
+    //     loginId: id,
+    //     password: pw,
+    //   })
+    //   .then(response => {
+    //     if (response.data.userId) {
+    //       props.setUserId(response.data.userId);
+    //     } else {
+    //       Alert.alert(response.data.message);
+    //     }
+    //   })
+    //   .catch(error => {
+    //     Alert.alert(error);
+    //   });
 
-    // props.setUserId('9199f5db-1d16-45a6-a2df-6272bca46163');
+    props.setUserId('9199f5db-1d16-45a6-a2df-6272bca46163');
   };
 
   const signUp = () => {

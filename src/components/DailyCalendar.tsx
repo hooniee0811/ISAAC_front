@@ -1,11 +1,9 @@
-import {addDays, addHours, endOfWeek, startOfDay, startOfWeek} from 'date-fns';
 import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import Timetable from 'react-native-calendar-timetable';
 import {ScrollView} from 'react-native-gesture-handler';
 
 type Props = {
-  startDateOfCalendar: Date;
+  currentDay: Date;
   userId: string;
 };
 

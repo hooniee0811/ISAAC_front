@@ -21,7 +21,7 @@ export type AiTask = {
 export type AddScheduleStackParamList = {
   RootAddSchedule: {userId: string};
   AddProject: {userId: string};
-  AddTask: {userId: string; project: ProjectProp; tasks: AiTask[]};
+  AddTask: {userId: string; project: string; tasks: AiTask[]};
   AddEvent: {userId: string};
 };
 

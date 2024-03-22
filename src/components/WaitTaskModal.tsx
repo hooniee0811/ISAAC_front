@@ -17,7 +17,7 @@ const WaitTaskModal = (props: Props) => {
       }}>
       <View style={styles.container}>
         <Text style={styles.title}>Generating...</Text>
-        <Text>Please wait a momnet while ISAAC</Text>
+        <Text>Please wait a moment while ISAAC</Text>
         <Text>generates the tasks for you</Text>
       </View>
     </Modal>

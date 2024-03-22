@@ -2,15 +2,7 @@ import {useRoute} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  Touchable,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {SettingsStackParamList} from '../navigators/SettingsStackNavigator';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
 
@@ -35,7 +27,6 @@ const TagListScreen = () => {
       .get(`https://api.calendar-isaac-isaac-isaac.shop/tag/list/${userId}`)
       .then(res => {
         const tags = res.data.tags;
-        console.log(tags);
         setTagList(tags);
       })
       .catch(error => {
