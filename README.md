@@ -18,4 +18,5 @@
 
 
 ### 캘린더에 업무 및 일정 표시
-![Ca-Mo](https://github.com/hooniee0811/ISAAC_front/assets/67103852/5b018aa8-d72c-4b23-9d3d-99a33d45bd7a)
+![image](https://github.com/hooniee0811/ISAAC_front/assets/67103852/20eb2d52-7b13-41e7-9544-3aa8a55af584)
+
