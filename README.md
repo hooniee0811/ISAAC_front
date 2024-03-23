@@ -17,6 +17,10 @@
 ![image](https://github.com/hooniee0811/ISAAC_front/assets/67103852/30e369aa-b343-448c-a44a-5f7d0c9ec319)
 
 
+### 사용자 루틴 등록
+![image](https://github.com/hooniee0811/ISAAC_front/assets/67103852/6262b1d6-756d-42b4-bd5c-a86d3ff9fe6d)
+
+
 ### 캘린더에 업무 및 일정 표시
 ![image](https://github.com/hooniee0811/ISAAC_front/assets/67103852/20eb2d52-7b13-41e7-9544-3aa8a55af584)
 
